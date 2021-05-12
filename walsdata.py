@@ -1,5 +1,8 @@
+import numpy as np
 import pandas as pd
 import geopandas as gpd
+from sklearn import base, pipeline, preprocessing as pre
+from sklearn.impute import KNNImputer
 
 langs = pd.read_csv('data/languages.csv')
 langs_geo = gpd.GeoDataFrame(
@@ -84,9 +87,33 @@ class Sample:
         self.codes = codes[
             codes.Parameter_ID.isin(self.features.ID)
         ]
+        self.values_matrix = pd.crosstab(
+            self.values.Language_ID,
+            self.values.Parameter_ID,
+            values=self.values.Value,
+            aggfunc='sum',
+        ).fillna(-1).astype(int).reindex(
+            index=self.langs_list,
+            columns=self.features_list,
+        )
         if impute:
-            # TODO encode features and impute missing values
-            pass
+            self.encoder = PandasColumnTransformer(feature_treatment)
+            self.values_encoded = self.encoder.fit_transform(self.values_matrix)
+            self.scaler = pipeline.Pipeline([
+                ('missing', pre.FunctionTransformer(to_float)),
+                ('scaler', pre.MinMaxScaler((0, 1))),
+            ])
+            self.values_scaled = pd.DataFrame(
+                self.scaler.fit_transform(self.values_encoded),
+                columns=self.values_encoded.columns,
+                index=self.values_encoded.index,
+            )
+            self.imputer = KNNImputer(weights='distance')
+            self.values_scaled_imputed = pd.DataFrame(
+                self.imputer.fit_transform(self.values_scaled),
+                columns=self.values_encoded.columns,
+                index=self.values_encoded.index,
+            )
     
     def fcount(self, feature_id):
         """How many languages in the sample have this feature defined?"""
@@ -127,6 +154,158 @@ def sample_of_density(density_threshold):
             verbose=False,
         )
     )
+
+
+class Ordinal(base.TransformerMixin):
+    """
+    This variable needs to be kept ordinal, possibly with some values recoded.
+    
+    The argument, if given, must be a mapping from integers to integers, each
+    item indicating that the key should be recoded as the value. For example,
+    Ordinal({4: 1}) will replace all 4's with 1's but otherwise leave the
+    numbers unchanged.
+    """
+    
+    def __init__(self, recode=None):
+        if recode is None:
+            recode = {}
+        self.recode = recode
+    
+    def fit(self, x, y=None):
+        self._feature_names = list(x.columns)
+        return self
+    
+    def transform(self, x):
+        return x.replace(self.recode)
+    
+    def get_feature_names(self):
+        return self._feature_names
+
+
+class OneHot(base.TransformerMixin):
+    """
+    This variable needs to be one-hot encoded.
+    
+    This expects the input to already be pseudo-ordinal, i.e. with
+    values ranging from 1 to n. Missing values are indicated by
+    -1, and propagated to all one-hot columns.
+    
+    The argument, if given, must be a mapping from integers to lists
+    of integers. Each item indicates that the key, instead of being
+    given its own column, must be rewritten as ones in the columns
+    given by the values. For example, OneHot({1: [], 4: [2, 3]})
+    will give all values except 1 and 4 their own columns, then
+    represent 1 as all zeros and 4 as a one in the 2 and 3 columns.
+    """
+    
+    def __init__(self, n, recode=None):
+        if recode is None:
+            recode = {}
+        self.n = n
+        self.recode = recode
+    
+    def fit(self, x, y=None):
+        self._removed_values = set(self.recode.keys())
+        removed_not_restored_values = self._removed_values - set(
+            value for values in self.recode.values()
+            for value in values
+        )
+        self.new_cols = [
+            (col, value)
+            for col in x.columns
+            for value in range(1, self.n + 1)
+            if value not in removed_not_restored_values
+        ]
+        return self
+    
+    def transform(self, x):
+        result = pd.DataFrame()
+        for col, value in self.new_cols:
+            col_name = f'{col}_{value}'
+            if value in self._removed_values:
+                result[col_name] = 0
+            else:
+                result[col_name] = (x[col] == value).astype(int)
+        for col in x.columns:
+            for key, values in self.recode.items():
+                for value in values:
+                    col_name = f'{col}_{value}'
+                    result[col_name] = result[col_name] | (x[col] == key).astype(int)
+        for col, value in self.new_cols:
+            col_name = f'{col}_{value}'
+            result[col_name] = result[col_name].mask(x[col] == -1, -1)
+        return result
+    
+    def get_feature_names(self):
+        return [f'{col}_{value}' for col, value in self.new_cols]
+
+
+class PandasColumnTransformer(base.TransformerMixin):
+    def __init__(self, transformers):
+        self.transformers = transformers
+    
+    def fit(self, x, y=None):
+        for col, transformer in self.transformers.items():
+            if col in x:
+                transformer.fit(x[[col]], y)
+        return self
+    
+    def transform(self, x):
+        result = []
+        for col, transformer in self.transformers.items():
+            if col in x:
+                result.append(transformer.transform(x[[col]]))
+        return pd.concat(result, axis=1)
+
+    
+def to_float(df):
+    return df.astype(float).replace(-1.0, np.nan)
+
+
+feature_treatment = {
+    '1A': Ordinal(),
+    '2A': Ordinal(),
+    '3A': Ordinal(),
+    '4A': OneHot(4, {1: [], 4: [2, 3]}),
+    '5A': OneHot(5, {2: [], 5: [3, 4]}),
+    '6A': OneHot(4, {1: [], 4: [2, 3]}),
+    '7A': OneHot(8, {1: [], 5: [2, 3], 6: [2, 4], 7: [3, 4], 8: [2, 3, 4]}),
+    '8A': OneHot(5, {1: [], 3: [], 4: [2, 5]}),
+    '11A': OneHot(4, {1: [], 2: [3, 4]}),
+    '12A': Ordinal(),
+    '13A': Ordinal(),
+    '18A': OneHot(6, {1: [], 5: [2, 4], 6: [3, 4]}),
+    '19A': OneHot(7, {1: [], 6: [2, 4, 5], 7: [4, 5]}),
+    '26A': Ordinal({1: 4}),
+    '33A': OneHot(9, {9: []}),
+    '51A': OneHot(9, {9: []}),
+    '57A': OneHot(4, {3: [1, 2], 4: []}),
+    '69A': OneHot(5, {5: []}),
+    '70A': OneHot(5, {1: [1, 2, 3], 2: [1, 2], 3: [1, 3], 4: [2, 3], 5: []}),
+    '81A': OneHot(7),
+    '82A': OneHot(3),
+    '83A': OneHot(3),
+    '85A': OneHot(5, {5: []}),
+    '86A': OneHot(3),
+    '87A': OneHot(4),
+    '88A': OneHot(6),
+    '89A': OneHot(4),
+    '90A': OneHot(7),
+    '92A': OneHot(6, {6: []}),
+    '93A': OneHot(3),
+    '112A': OneHot(6, {5: [1, 2]}),
+    '116A': OneHot(7, {3: [1, 2], 7: []}),
+    '143A': OneHot(17, {
+        6: [1, 2], 7: [1, 3], 8: [1, 4], 9: [2, 3], 10: [2, 4], 11: [3, 4], 12: [3],
+        13: [6], 14: [6], 15: [6], 16: [6], 17: [6],
+    }),
+    '143G': OneHot(4, {4: []}),
+    '144A': OneHot(21, {
+        2: [3], 3: [4], 4: [2], 5: [1], 6: [3], 7: [4], 8: [2],
+        9: [1], 10: [4], 11: [2], 12: [1], 13: [3], 14: [4], 15: [2],
+        16: [5], 17: [5], 18: [5], 19: [5], 20: [5], 21: [5],
+    }),
+}
 
 
 s229 = sample_of_density(0.98)
