@@ -13,7 +13,7 @@ def plot(points, labels=None):
     fig, ax = plt.subplots(figsize=(16, 10))
     world.plot(ax=ax, color='w', edgecolor='k', linewidth=0.5)
     if labels is None:
-        points.plot(ax=ax, marker='o', color=color, markersize=25)
+        points.plot(ax=ax, marker='o', color='b', markersize=25)
     else:
         labelled_points = points.copy()
         labelled_points['label'] = labels
