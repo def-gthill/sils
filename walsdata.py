@@ -99,6 +99,10 @@ class Sample:
         if impute:
             self.encoder = PandasColumnTransformer(feature_treatment)
             self.values_encoded = self.encoder.fit_transform(self.values_matrix)
+            nunique = self.values_encoded.replace(-1, np.nan).nunique()
+            no_variation_cols = list(nunique[nunique == 1].index)
+            self.values_encoded = self.values_encoded.drop(no_variation_cols, axis=1)
+            
             self.scaler = pipeline.Pipeline([
                 ('missing', pre.FunctionTransformer(to_float)),
                 ('scaler', pre.MinMaxScaler((0, 1))),
@@ -108,6 +112,7 @@ class Sample:
                 columns=self.values_encoded.columns,
                 index=self.values_encoded.index,
             )
+            
             self.imputer = KNNImputer(weights='distance')
             self.values_scaled_imputed = pd.DataFrame(
                 self.imputer.fit_transform(self.values_scaled),
