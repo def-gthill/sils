@@ -68,7 +68,7 @@ present_values_sorted = sort_highest_coverage_first(present_values)
 
 class Sample:
     def __init__(self, present_values, impute=False):
-        self.present_values = present_values
+        self.present_values = present_values.sort_index()
         self.langs_list = list(self.present_values.index)
         self.langs = langs_geo[langs_geo.ID.isin(self.langs_list)]
         self.lang_names = list(self.langs.Name)
@@ -119,6 +119,9 @@ class Sample:
                 columns=self.values_encoded.columns,
                 index=self.values_encoded.index,
             )
+    
+    def search_language(self, name):
+        return self.langs[self.langs.Name.str.contains(name)][['ID', 'Name']]
     
     def fcount(self, feature_id):
         """How many languages in the sample have this feature defined?"""
