@@ -49,4 +49,10 @@ def plot(points, labels=None):
         labelled_points['label'] = labels
         num_unique_labels = len(np.unique(labels))
         cmap = ListedColormap(colors[:num_unique_labels])
-        labelled_points.plot(ax=ax, marker='o', column='label', markersize=35, cmap=cmap)
+        labelled_points.plot(
+            ax=ax, marker='o', column='label', markersize=35,
+            cmap=cmap, categorical=True,
+            legend=True, legend_kwds={
+                'loc': 'lower left'
+            }
+        )
