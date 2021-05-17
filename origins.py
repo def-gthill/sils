@@ -82,9 +82,7 @@ class OriginDataset:
         train_prob = train[train == 1].count() / train.count()
 
         feature_name = walsdata.get_shortname(feature)
-        named_coefs = dict(
-            zip((cat for col_cat in self.categories for cat in col_cat), coefs[0])
-        )
+        named_coefs = self.named_coefs(coefs[0])
 
         result = OriginResults(
             feature_name=feature_name,
@@ -109,6 +107,56 @@ class OriginDataset:
                 # Feature missing from the training set
                 pass
         return pandify(result)
+    
+    def full_linear_model(self, cv=False, random_state=5364):
+        ord_features = list(self.values.columns[~self.values.columns.str.contains('_')])
+        
+        if cv:
+            linreg = lm.RidgeCV(
+                cv=5,
+                alphas=(0.01, 0.1, 1, 10, 100)
+            )
+        else:
+            linreg = lm.Ridge(random_state=random_state)
+
+        model = self.origins_onehot(linreg)
+
+        train = round_to_int(self.values_train[ord_features])
+        test = round_to_int(self.values_test[ord_features])
+
+        model.fit(self.origins_train, train)
+
+        clf = model.named_steps['clf']
+
+        train_score = metrics.r2_score(
+            train, model.predict(self.origins_train), multioutput='raw_values'
+        )
+        test_score = metrics.r2_score(
+            test, model.predict(self.origins_test), multioutput='raw_values'
+        )
+        coefs = clf.coef_
+        neutral_value = clf.predict(np.full((1, clf.coef_.shape[1]), 0.0))
+        train_value = train.mean().values
+        
+        result = []
+        for i, feature in enumerate(ord_features):
+            result.append((
+                feature,
+                OriginResults(
+                    feature_name=walsdata.get_shortname(feature),
+                    train_score=train_score[i],
+                    test_score=test_score[i],
+                    observed_prob=train_value[i],
+                    innate_prob=neutral_value[0, i],
+                    coefs=self.named_coefs(clf.coef_[i]),
+                )
+            ))
+        return pandify(result)
+    
+    def named_coefs(self, coefs):
+        return dict(
+            zip((cat for col_cat in self.categories for cat in col_cat), coefs)
+        )
 
 
 def round_to_int(series):
