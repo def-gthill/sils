@@ -66,6 +66,7 @@ class OriginDataset:
         
         train = round_to_int(self.values_train[feature])
         test = round_to_int(self.values_test[feature])
+        full = round_to_int(self.values[feature])
         
         model.fit(self.origins_train, train)
 
@@ -79,7 +80,7 @@ class OriginDataset:
         )
         coefs = clf.coef_
         neutral_prob = clf.predict_proba(np.full(clf.coef_.shape, 0.0))[0, 1]
-        train_prob = train[train == 1].count() / train.count()
+        observed_prob = full[full == 1].count() / full.count()
 
         feature_name = walsdata.get_shortname(feature)
         named_coefs = self.named_coefs(coefs[0])
@@ -88,7 +89,7 @@ class OriginDataset:
             feature_name=feature_name,
             train_score=train_score,
             test_score=test_score,
-            observed_prob=train_prob,
+            observed_prob=observed_prob,
             innate_prob=neutral_prob,
             coefs=named_coefs,
         )
@@ -121,8 +122,9 @@ class OriginDataset:
 
         model = self.origins_onehot(linreg)
 
-        train = round_to_int(self.values_train[ord_features])
-        test = round_to_int(self.values_test[ord_features])
+        train = self.values_train[ord_features]
+        test = self.values_test[ord_features]
+        full = self.values[ord_features]
 
         model.fit(self.origins_train, train)
 
@@ -136,7 +138,7 @@ class OriginDataset:
         )
         coefs = clf.coef_
         neutral_value = clf.predict(np.full((1, clf.coef_.shape[1]), 0.0))
-        train_value = train.mean().values
+        observed_value = full.mean().values
         
         result = []
         for i, feature in enumerate(ord_features):
@@ -146,7 +148,7 @@ class OriginDataset:
                     feature_name=walsdata.get_shortname(feature),
                     train_score=train_score[i],
                     test_score=test_score[i],
-                    observed_prob=train_value[i],
+                    observed_prob=observed_value[i],
                     innate_prob=neutral_value[0, i],
                     coefs=self.named_coefs(clf.coef_[i]),
                 )
