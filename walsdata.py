@@ -483,11 +483,14 @@ value_shortnames = {
 
 
 def get_shortname(feature_code):
-    if '_' in feature_code:
-        base_feature_code = feature_code.split('_')[0]
-        return f'{feature_shortnames[base_feature_code]}__{value_shortnames[feature_code]}'
-    else:
-        return feature_shortnames[feature_code]
+    try:
+        if '_' in feature_code:
+            base_feature_code = feature_code.split('_')[0]
+            return f'{feature_shortnames[base_feature_code]}__{value_shortnames[feature_code]}'
+        else:
+            return feature_shortnames[feature_code]
+    except KeyError:
+        return feature_code
 
 
 s229 = sample_of_density(0.98)
