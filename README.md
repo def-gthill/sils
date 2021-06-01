@@ -8,7 +8,7 @@ found across many different languages.
 
 This was my final project for [Lighthouse Labs](https://www.lighthouselabs.ca/en/).
 
-## Background
+## Overview
 
 The world's languages are quite diverse, but they aren't random;
 certain language features are much more common than others,
@@ -22,7 +22,23 @@ I've done two analyses on the WALS dataset to gain insight into these forces:
 - Using hierarchical clustering to look for "parameters" that
   control multiple features at once.
 - Using linear models to control for the historical and
-  geographical relationships between languages and reveal the underlying tendencies.
+  geographical relationships between languages and reveal the underlying tendencies,
+  i.e. how common we would expect a feature to be in a collection of totally
+  independent languages.
+
+These are the main takeaways from these analyses:
+
+- The world's languages naturally cluster into two groups based on
+  whether they tend to put the most important word (the "head") in a phrase
+  at the beginning or the end. This corresponds to the known
+  classification of languages into "head-initial" and "head-final".
+- The inferred underlying tendency towards certain features is quite different
+  from the raw proportions. For example, *labial-velar* sounds (pronouncing
+  a "k" and "p" or a "g" and "b" at the same time) occur in 6% of
+  my sample, but the languages that have it are clustered in one region
+  in sub-Saharan Africa and likely got it from a common source. My
+  analysis implies that, in a collection of totally independent languages,
+  labial-velar sounds would arise in only about 1% of them.
 
 ## Data Preprocessing
 
