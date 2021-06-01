@@ -30,7 +30,7 @@ These are the main takeaways from these analyses:
 
 - The world's languages naturally cluster into two groups based on
   whether they tend to put the most important word (the "head") in a phrase
-  at the beginning or the end. This corresponds to the known
+  at the beginning or the end of the phrase. This corresponds to the known
   classification of languages into "head-initial" and "head-final".
 - The inferred underlying tendency towards certain features is quite different
   from the raw proportions. For example, *labial-velar* sounds (pronouncing
@@ -41,6 +41,10 @@ These are the main takeaways from these analyses:
   labial-velar sounds would arise in only about 1% of them.
 
 ## Data Preprocessing
+
+Data preparation is in ``prep.ipynb``.
+
+### Choosing a Sample
 
 The biggest challenge in using the WALS dataset is that it's very sparse.
 While the dataset lists over 2,000 languages and 192 language features,
@@ -90,6 +94,56 @@ Note that each dot indicates the language's place of *origin*,
 not the current extent of its speaker population. For example,
 all those dots in Mexico are indigenous languages; none are Spanish, which
 has one dot centred in Spain.
+
+### Encoding
+
+The features in WALS are all encoded as ordinal variables; e.g. if
+a given feature has four different values, those values are assigned
+the numbers 1 to 4. But most of the features don't really represent
+ordered things. For example, Feature 88A ("Order of Demonstrative and
+Noun") has these values:
+
+- 1: Demonstrative, then noun
+- 2: Noun, then demonstrative
+- 3: Demonstrative prefix
+- 4: Demonstrative suffix
+- 5: Demonstrative both before and after noun
+- 6: Mixed
+
+The order here is arbitrary. Demonstrative followed by noun isn't
+a more extreme version of noun followed by demonstrative, etc.
+I one-hot encoded these, resulting in six binary columns.
+
+Sometimes, the last (or the first!) value represents "the feature
+is completely absent". Feature 69A ("Position of Tense-Aspect Affixes")
+is an example of this:
+
+- 1: Tense-aspect prefixes
+- 2: Tense-aspect suffixes
+- 3: Tense-aspect tone
+- 4: Mixed type
+- 5: No tense-aspect inflection
+
+I still one-hot encoded these, but since value 5 is just
+"not applicable", I used only four binary columns and
+gave any language with value 5 a zero in all four columns.
+
+Other features are actually composites of several independent
+features that happen to fit in the same category. For example,
+Feature 19A ("Presence of Uncommon Sounds") has these values:
+
+- 1: None
+- 2: Clicks
+- 3: Labial-velars
+- 4: Pharyngeals
+- 5: 'Th' sounds
+- 6: Clicks, pharyngeals, and 'th'
+- 7: Pharyngeals and 'th'
+
+Since this is really four different features (clicks,
+labial-velars, pharyngeals, 'th' sounds), I used
+four binary columns, and gave languages with mixed types
+ones in multiple columns.
 
 ## Parameters
 
