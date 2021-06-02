@@ -145,6 +145,51 @@ labial-velars, pharyngeals, 'th' sounds), I used
 four binary columns, and gave languages with mixed types
 ones in multiple columns.
 
+After encoding, I removed any columns with no variation,
+i.e. where all 280 languages had the same value in that
+column. Such columns represent features that are so
+rare that they aren't found in any of the 280 languages of the
+sample, and so were unusable for this analysis.
+
+Encoding in this way turned the 40 features into
+118 feature columns.
+
+### Scaling
+
+Since I wanted to use distance-based algorithms to analyze
+the language features, I scaled each feature column
+to range between 0 and 1. This was already the case for
+the binary columns, but the remaining ordinal columns had
+to be forced between 0 and 1 as well.
+
+For example,
+Feature 1A ("Vowel Inventories") has the values:
+
+- 1: Small
+- 2: Moderately small
+- 3: Average
+- 4: Moderately large
+- 5: Large
+
+After scaling, these values became:
+
+- 0.00: Small
+- 0.25: Moderately small
+- 0.50: Average
+- 0.75: Moderately large
+- 1.00: Large
+
+### Imputing
+
+The last preprocessing step was to fill in missing values.
+I used a k-nearest neighbours imputer to accomplish this,
+effectively filling in missing values by looking at the
+languages that were most similar otherwise.
+This left some binary features with values between 0 and 1
+(if the most similar languages had different values for the
+feature), indicating some uncertainty as to which value
+was correct.
+
 ## Parameters
 
 Noam Chomsky proposed that languages can be described
@@ -156,6 +201,3 @@ switch affects verb placement, adjective placement, prepositions,
 etc. Could I find evidence of this by clustering
 languages by their features?
 
-
-
-## 
