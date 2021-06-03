@@ -192,6 +192,9 @@ was correct.
 
 ## Parameters
 
+The analysis of linguistic parameters by clustering is
+in ``cluster.ipynb``.
+
 Noam Chomsky proposed that languages can be described
 by a list of *parameters*, like switches that can be either
 on or off, and these parameters control many of the
@@ -201,3 +204,23 @@ switch affects verb placement, adjective placement, prepositions,
 etc. Could I find evidence of this by clustering
 languages by their features?
 
+I used the ``scipy.cluster.hierarchy`` module from
+SciPy to do the hierarchical clustering and draw
+dendrograms of the results. I measured distances
+with the Euclidean metric and distance between clusters
+using the Ward method.
+
+The first step was to establish a baseline to make sure
+the results I was getting weren't just spurious patterns in
+noise. I created a baseline dataset by shuffling each
+feature column separately, resulting in each language having
+random features but each feature occurring at the observed
+frequency overall. The result of the hierarchical clustering
+looked like this:
+
+<img src="cluster_baseline.png" alt="A very flat dendrogram" width="70%"/>
+
+On the real dataset, the result of the hierarchical clustering
+looked like this:
+
+<img src="cluster_real.png" alt="A much taller but still noisy dendrogram" width="70%"/>
