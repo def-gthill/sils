@@ -207,8 +207,8 @@ languages by their features?
 I used the ``scipy.cluster.hierarchy`` module from
 SciPy to do the hierarchical clustering and draw
 dendrograms of the results. I measured distances
-with the Euclidean metric and distance between clusters
-using the Ward method.
+between languages with the Euclidean metric and
+distance between clusters using the Ward method.
 
 The first step was to establish a baseline to make sure
 the results I was getting weren't just spurious patterns in
@@ -224,3 +224,33 @@ On the real dataset, the result of the hierarchical clustering
 looked like this:
 
 <img src="cluster_real.png" alt="A much taller but still noisy dendrogram" width="70%"/>
+
+This suggests a natural division of the world's languages into two
+groups:
+
+<img src="cluster2.png" alt="200 points on a world map, some yellow and the rest black" width="100%"/>
+
+We can see striking regional patterns here: languages in
+South America, New Guinea, and most of Asia are overwhelmingly
+in group 1, while languages in Europe, Africa,
+Southeast Asia, and the Pacific islands are overwhelmingly in group 2.
+
+What distinguishes these two groups? These are the top ten
+most distinct feature columns, measured by how different
+the average value of the feature column is between the two
+groups:
+
+| Feature Column | Feature Description | Cluster 1 Average | Cluster 2 Average | Difference |
+| --- | --- | --- | --- | --- |
+| 81A_1 | The components of a clause are ordered Subject-Object-Verb (SOV) | 0.90 | 0.01 | 0.89 |
+| 83A_1 | The verb's object goes before the verb | 0.93 | 0.05 | 0.88 |
+| 83A_2 | The verb's object goes after the verb | 0.03 | 0.83 | 0.80 |
+| 85A_1 | The language has postpositions | 0.91 | 0.14 | 0.77 |
+| 85A_2 | The language has prepositions | 0.03 | 0.69 | 0.66 |
+| 86A_1 | Possessives go before the noun they possess | 0.92 | 0.27 | 0.65 |
+| 90A_1 | Relative clauses go after the noun they describe | 0.30 | 0.88 | 0.57 |
+| 81A_2 | The components of a clause are ordered Subject-Verb-Object (SVO) | 0.04 | 0.56 | 0.52 |
+| 86A_2 | Possessives go after the noun they possess | 0.05 | 0.56 | 0.51 |
+| 69A_2 | Verb tense is marked by suffixes | 0.82 | 0.37 | 0.46 |
+
+
