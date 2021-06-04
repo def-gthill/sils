@@ -225,7 +225,9 @@ looked like this:
 
 <img src="cluster_real.png" alt="A much taller but still noisy dendrogram" width="70%"/>
 
-This suggests a natural division of the world's languages into two
+### Two Clusters
+
+Thie above diagram suggests a natural division of the world's languages into two
 groups:
 
 <img src="cluster2.png" alt="200 points on a world map, some yellow and the rest black" width="100%"/>
@@ -253,4 +255,36 @@ groups:
 | 86A_2 | Possessives go after the noun they possess | 0.05 | 0.56 | 0.51 |
 | 69A_2 | Verb tense is marked by suffixes | 0.82 | 0.37 | 0.46 |
 
+These clusters have names in linguistic typology; cluster 1 is
+"head-final" and cluster 2 is "head-initial". English is an example
+of a cluster 2 (head-initial) language. Take the following sentence:
 
+> The man who lives in the basement ate the student's soup.
+
+This sentence shows the following features of English:
+
+- The object "the student's soup" goes after the verb "ate" (like 83% of cluster 2 languages)
+- English uses prepositions: "in" goes before "the basement" (like 69% of cluster 2 languages)
+- The possessive "student's" goes before the noun it possesses, "soup" (like 27% of cluster 2 languages)
+- The relative clause "who lives in the basement" goes after the noun it describes, "man" (like 88% of cluster 2 languages)
+
+Of these features, only the position of the possessive is atypical of
+cluster 2 languages.
+
+(In fact, English has a zero value for both "possessive before noun" and
+"possessive after noun" because it vacillates between the two orders,
+depending on how animate the possessor is. You can say either
+"the student's soup" or "the soup of the student"; the former is
+preferred, but the preference reverses in "the soup of the day")
+
+In contrast, if we translated the above sentence into Japanese, a
+prototypical cluster 1 language, it would have a structure more like this:
+
+> The basement in living man the student's soup ate
+
+In Japanese:
+
+- The object goes before the verb (like 93% of cluster 1 languages)
+- Postpositions are used: "in" goes after "the basement" (like 91% of cluster 1 languages)
+- The possessive goes before the noun it possesses (like 92% of cluster 1 languages)
+- The relative clause goes before the noun (only 30% of cluster 1 languages have it after)
