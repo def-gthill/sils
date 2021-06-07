@@ -288,3 +288,55 @@ In Japanese:
 - Postpositions are used: "in" goes after "the basement" (like 91% of cluster 1 languages)
 - The possessive goes before the noun it possesses (like 92% of cluster 1 languages)
 - The relative clause goes before the noun (only 30% of cluster 1 languages have it after)
+
+The central idea here is that cluster 1 languages tend to put the "most important"
+word in a phrase (the "head") at the end of the phrase, while the cluster
+2 languages tend to put it at the beginning.
+
+It's encouraging to see this known classification of languages into head-final
+and head-initial emerge from clustering on language features.
+
+### Three Clusters
+
+The next most natural classification is into three groups, with the original
+cluster 2 being split into two subgroups. This is what these groups look like:
+
+<img src="cluster3.png" alt="Now the points are black, yellow, and purple" width="100%"/>
+
+This effectively splits the head-initial languages into the African type (yellow) and
+the European/American type (purple). The most distinguishing features between these
+two clusters are:
+
+| Feature Column | Feature Description | African-type Average | European-type Average | Difference |
+| --- | --- | --- | --- | --- |
+| 89A_2 | Numerals come after the noun | 0.84 | 0.13 | 0.71 |
+| 81A_2 | The components of a clause are ordered Subject-Verb-Object (SVO) | 0.95 | 0.29 | 0.66 |
+| 82A_1 | The subject of a clause goes before the verb | 1.00 | 0.34 | 0.66 |
+| 89A_1 | Numerals come before the noun | 0.16 | 0.82 | 0.65 |
+| 88A_2 | Demonstratives come after the noun | 0.88 | 0.26 | 0.63 |
+| 88A_1 | Demonstratives come before the noun | 0.03 | 0.66 | 0.62 |
+| 93A_1 | Question words go at the beginning of the sentence | 0.10 | 0.63 | 0.53 |
+| 93A_2 | Question words replace the noun in the sentence | 0.82 | 0.30 | 0.52 |
+| 92A_2 | Question particles go at the end of the sentence | 0.61 | 0.11 | 0.50 |
+| 143A_1 | Negative markers go before the verb | 0.39 | 0.85 | 0.47 |
+
+The common thread here seems to be "prototypical" head-initial languages
+versus "atypical" head-initial languages. The prototypical head-initial
+language has SVO word order and everything coming after the noun in a noun
+phrase, which is more common in the African type. The European/American type is more
+likely to mix things up by having flexible word order in clauses, or
+putting numerals and demonstratives before nouns, or moving the question
+word to the beginning of the sentence.
+
+### More Clusters
+
+As we move down the clustering hierarchy to make finer and finer groups,
+the results tend to dissolve into noise. Here's the map at nine clusters:
+
+<img src="cluster9.png" alt="Now the points are in nine colours" width="100%"/>
+
+The interesting thing to note here is that, even now that the map looks
+more chaotic, all the languages of Europe (except Basque) are still
+in the same cluster. This underscores how little you can learn about
+the way language works in general by studying only European languages!
+
