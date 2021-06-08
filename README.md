@@ -340,3 +340,71 @@ more chaotic, all the languages of Europe (except Basque) are still
 in the same cluster. This underscores how little you can learn about
 the way language works in general by studying only European languages!
 
+## Underlying Tendencies
+
+The analysis of underlying tendencies using linear models is
+in ``origins.ipynb``.
+
+The features in different languages aren't independent from
+each other: languages in the same family are likely to share
+features because of their common origin, while languages
+in close geographical proximity tend to become more like each
+other over time. When seeking the underlying forces that shape
+language features, these relationships
+are a distraction. Can we control for them?
+
+My approach was to model language features as caused by three
+factors: language family, geographical region, and some
+innate tendency to favour having or not having the feature.
+So I fit linear models to predict each language feature, with coefficients for
+each language family and geographical region. The model's intercept
+represents what's left over: the innate tendency.
+
+### Language Family
+
+The WALS dataset lists a "family" and "genus" for each language.
+Families in this context refers to the largest known groups
+of languages that can be demonstrated to have a common origin,
+while genera are smaller groups of languages whose common origin
+is obvious.
+For example, the Romance languages (those descended from
+Latin, like French and Spanish) are considered a genus;
+their family is the Indo-European family, which also includes
+languages like German, Russian, and Hindi.
+
+Some families and genera are only represented by one or two
+languages in the sample, which makes them unhelpful for modelling.
+I kept only the groups that had at least five
+representatives in the sample. This left the following list
+of groups:
+
+| Group Name | Group Level | Number of Languages in the Sample |
+| --- | --- | --- |
+| Austronesian | Family | 26 |
+| Niger-Congo | Family | 23 |
+| Indo-European | Family | 20 |
+| Afro-Asiatic | Family | 15 |
+| Sino-Tibetan | Family | 15 |
+| Trans-New Guinea | Family | 11 |
+| Altaic | Family | 8 |
+| Austro-Asiatic | Family | 6 |
+| Uto-Aztecan | Family | 6 |
+| Eastern Sudanic | Family | 6 |
+| Nakh-Daghestanian | Family | 5 |
+| Penutian | Family | 5 |
+| Pama-Nyungan | Family | 5 |
+| Oceanic | Family | 13 |
+| Bantoid | Family | 6 |
+
+Note that some of these families are dubious (e.g. Altaic and Penutian)
+but they still reflect some degree of geographical relationship,
+so I kept them.
+
+### Geographical Region
+
+### Logistic Regressions
+
+### Linear Regressions
+
+### Combined Results
+
