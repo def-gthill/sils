@@ -402,6 +402,10 @@ Note that some of these families are dubious (e.g. Altaic and Penutian)
 but they still reflect some degree of historical contact, which
 may be useful for predicting features.
 
+To make the family and genus variables suitable for models,
+I one-hot encoded them, with languages not in any of the above
+families getting a zero value in all columns.
+
 ### Geographical Region
 
 The WALS dataset lists only very broad geographical regions
@@ -442,7 +446,16 @@ This left the following list of regions:
 | Caucasus | 10 |
 | Mexico | 10 |
 
+I one-hot encoded the regions as well, with outliers given
+zero values in all columns.
+
 ### Metrics
+
+It's possible to fit a linear model to any language feature and get
+an intercept value out of it, but we need to make sure this value
+is meaningful. Only models that can *predict* the feature for a given
+language given its family and region have actually found a real pattern
+in the data, rather than just fitting to noise.
 
 I trained each model on a 75% sample of languages (i.e. 210 languages),
 and tested it on the remaining 25% sample. To evaluate which models
@@ -454,7 +467,34 @@ the r-squared metric, which is easy to interpret (0 is the baseline,
 1 is perfect, anything negative is garbage) and trivially comparable
 between models.
 
+To evaluate a logistic regression model, one would normally use a metric like
+the accuracy or F1 score. But in this case, the goal is to convert the intercept
+into an innate probability of having a given feature. This means I care about
+the probability estimates (how likely is this language to have this feature?)
+rather than class assignments (does this language have this feature or not?).
+The metric that incentivizes accurate probability estimates is the
+log-loss or cross-entropy loss.
+
+The raw log-loss score isn't comparable between models: a perfect model
+gets a score of 0, but the baseline model gets some positive score that
+depends on the class imbalance. So I used the metric ``1 - LL / LLB``,
+where ``LL`` is the log-loss score for the model, and ``LLB`` is the
+log-loss score for the baseline model (which assigns a probability
+equal to the background rate for every observation). This transformation
+gives the log-loss score the same scale as the r-squared metric: 0 is
+the baseline, 1 is perfect, anything negative is garbage.
+
 ### Logistic Regressions
+
+As with the clustering task, the first step was to create a baseline
+model on scrambled data. This time, I scrambled the family, genus,
+and region variables independently of each other.
+
+When I ran logistic regressions on all categorical features using
+the scrambled data, the best test score any model achieved was
+0.1; most got a negative score. So I used 0.1 as the cutoff; any
+model that got a test score less than 0.1 could've simply gotten
+lucky.
 
 ### Linear Regressions
 
