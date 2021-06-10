@@ -356,9 +356,11 @@ are a distraction. Can we control for them?
 My approach was to model language features as caused by three
 factors: language family, geographical region, and some
 innate tendency to favour having or not having the feature.
-So I fit linear models to predict each language feature, with coefficients for
-each language family and geographical region. The model's intercept
-represents what's left over: the innate tendency.
+So I fit linear models (ordinary least squares for ordinal features,
+logistic regression for binary features) to predict each language feature,
+with coefficients for each language family and geographical region. The model's intercept
+for a given feature represents what's left over: the innate tendency
+for a language to have that feature.
 
 ### Language Family
 
@@ -393,14 +395,64 @@ of groups:
 | Nakh-Daghestanian | Family | 5 |
 | Penutian | Family | 5 |
 | Pama-Nyungan | Family | 5 |
-| Oceanic | Family | 13 |
-| Bantoid | Family | 6 |
+| Oceanic | Genus | 13 |
+| Bantoid | Genus | 6 |
 
 Note that some of these families are dubious (e.g. Altaic and Penutian)
-but they still reflect some degree of geographical relationship,
-so I kept them.
+but they still reflect some degree of historical contact, which
+may be useful for predicting features.
 
 ### Geographical Region
+
+The WALS dataset lists only very broad geographical regions
+(like "Eurasia"). I wanted to use regions where a high
+density of languages exist close to each other, indicating
+a high chance of features spreading. I also wanted isolated
+languages to be excluded from all geographical regions,
+since their evolution would likely be independent of other
+languages. This made density-based
+clustering (DBSCAN) a natural fit for assigning languages to
+geographical regions.
+
+I tried various DBSCAN parameters and verified the results
+on the map for reasonableness. One criterion I used was
+that the European languages should form one region,
+but Australia and New Guinea should be separate regions.
+This is the result:
+
+<img src="dbscan.png" alt="Languages coloured by region" width="100%"/>
+
+There are some oddities here (e.g. Turkish being assigned to the Caucasus),
+but it was good enough for the purposes of this study.
+Refining the assignment of geographical regions is a potential
+future improvement.
+
+Again, I only kept regions with at least five languages in the sample.
+This left the following list of regions:
+
+| Region Name | Number of Languages in the Sample |
+| --- | --- |
+| Africa | 55 |
+| USA/Canada | 37 |
+| New Guinea | 25 |
+| Southeast Asia | 21 |
+| Andes/Amazon | 20 |
+| Australia | 16 |
+| Europe | 15 |
+| Caucasus | 10 |
+| Mexico | 10 |
+
+### Metrics
+
+I trained each model on a 75% sample of languages (i.e. 210 languages),
+and tested it on the remaining 25% sample. To evaluate which models
+were successful, I needed a scoring metric that was comparable across
+models.
+
+For the ordinary least squares models of ordinal features, I used
+the r-squared metric, which is easy to interpret (0 is the baseline,
+1 is perfect, anything negative is garbage) and trivially comparable
+between models.
 
 ### Logistic Regressions
 
