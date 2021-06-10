@@ -484,19 +484,57 @@ equal to the background rate for every observation). This transformation
 gives the log-loss score the same scale as the r-squared metric: 0 is
 the baseline, 1 is perfect, anything negative is garbage.
 
-### Logistic Regressions
+Once I established that a feature was predictable, I needed to compare
+effect sizes: how different is the estimated innate propensity from
+the observed average in the sample? Since the scaled feature values
+always range between 0 and 1, for both categorical and ordinal features,
+I used the log odds ratio (``log(OA / (1 - OA) * (1 - IA) / IA)``,
+where ``OA`` is the observed average value and ``IA`` is the estimated
+innate average value) to measure the effect size. 
+The log odds ratio has some nice properties:
+
+- It treats extreme values on both ends equally: moving from an
+  innate 1% to an observed 4% has the same log odds ratio as
+  moving from an innate 96% to an observed 99%.
+- It's symmetrical: moving from an innate 20% to an observed
+  40% and moving from an innate 40% to an observed 20% have
+  log odds ratios differing only in sign.
+
+### Baseline
 
 As with the clustering task, the first step was to create a baseline
 model on scrambled data. This time, I scrambled the family, genus,
 and region variables independently of each other.
 
-When I ran logistic regressions on all categorical features using
+When I trained models on all features using
 the scrambled data, the best test score any model achieved was
 0.1; most got a negative score. So I used 0.1 as the cutoff; any
 model that got a test score less than 0.1 could've simply gotten
 lucky.
 
-### Linear Regressions
+### Results
 
-### Combined Results
+These are the testing scores for all the models:
+
+<img src="features_by_score_all.png" alt="A column chart with the highest bar on the left near 0.5 and the lowest bar on the right near -0.3" width="100%"/>
+
+I discarded almost half of these models for having a testing score below 0.1.
+
+The most predictable features were:
+
+- Using tone to distinguish meaning: 0.46
+- Lacking fricative sounds (/s/, /f/, etc.): 0.45
+- Having ejective sounds (made while holding one's breath): 0.38
+- Having pharyngeal sounds (made in the back of the throat): 0.38
+- Relative clauses before the noun: 0.38
+
+Tone in particular is well-known in linguistics
+for spreading easily across languages in contact, even unrelated languages,
+so it's unsurprising to see it at the top of the list.
+
+So what do these models say about underlying tendencies? Here are
+the log odds ratios of the models (only the ones with test scores above 0.1):
+
+<img src="features_by_shift_all.png" alt="A column chart with both positive and negative bars, with the highest bar on the left at around 1.5" width="100%"/>
+
 
