@@ -537,4 +537,36 @@ the log odds ratios of the models (only the ones with test scores above 0.1):
 
 <img src="features_by_shift_all.png" alt="A column chart with both positive and negative bars, with the highest bar on the left at around 1.5" width="100%"/>
 
+The biggest shifts were:
 
+- Labial-velar sounds: observed rate 6%, estimated innate rate 1%
+- Plurals marked by prefixes: observed rate 9%, estimated innate rate 4%
+- Numerals after nouns: observed rate 43%, estimated innate rate 24%
+- Possessives after nouns: observed rate 33%, estimated innate rate 17%
+- Relative clauses after nouns: observed rate 60%, estimated innate rate 43%
+
+Think of the innate rate as asking: if we had a sample of completely unrelated,
+isolated languages, how common would this feature be? The results imply that
+labial-velars would occur in only 1% of independent languages, and that this
+feature is over-represented in the sample because it has spread across
+a swath of Africa.
+
+### Future Work
+
+This is just a brief exploration of the patterns found in the WALS dataset.
+In the future, I want to do further analyses that were outside the scope of
+a two-week student project.
+
+First, I want to look into *implicational universals*. These are rules that
+linguists have proposed to be true for all (or most) languages: if
+a language has feature A, then it must also have feature B. But these rules
+are subject to the same confounding factors as the features themselves:
+do feature A and feature B occur together because there's a "parameter"
+in the brain that controls both features, or are both features simply
+characteristic of a given family or region? I want to do a similar
+analysis for implicational universals as I did for features.
+
+Second, while I was doing research for this project, I found papers
+using more advanced statistical techniques, such as Markov Chain Monte Carlo,
+to do similar analysis. I want to replicate these analyses and look
+for ways they can be extended.
