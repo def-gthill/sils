@@ -551,7 +551,7 @@ labial-velars would occur in only 1% of independent languages, and that this
 feature is over-represented in the sample because it has spread across
 a swath of Africa.
 
-### Future Work
+## Future Work
 
 This is just a brief exploration of the patterns found in the WALS dataset.
 In the future, I want to do further analyses that were outside the scope of
